@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Plugin AI Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+        pre {
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Minecraft Plugin AI Code Generator</h1>
+    <p>Describe what you want your Minecraft plugin to do:</p>
+    <textarea id="requirements" placeholder="Enter your plugin requirements..."></textarea>
+    <button onclick="generateCode()">Generate Code</button>
+
+    <h2>Generated Code</h2>
+    <pre id="generatedCode"></pre>
+
+    <script>
+        async function generateCode() {
+            const requirements = document.getElementById('requirements').value;
+            const response = await fetch('https://your-backend-url/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ requirements }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('generatedCode').textContent = data.code;
+            } else {
+                document.getElementById('generatedCode').textContent = 'Error generating code.';
+            }
+        }
+    </script>
+</body>
+</html>
