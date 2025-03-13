@@ -126,6 +126,7 @@
             border-radius: 50px;
             font-weight: bold;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .btn:hover {
@@ -190,6 +191,7 @@
             border-radius: 10px;
             padding: 20px;
             background-color: #f9f9f9;
+            display: none; /* Initially hidden */
         }
 
         .chat-box {
@@ -270,7 +272,7 @@
       </div>
       <ul class="nav-links">
           <li><a href="#features">Features</a></li>
-          <li><a href="#demo">Try It</a></li>
+          <li><a href="#demo" id="tryItNowBtn">Try It Now</a></li>
           <li><a href="#testimonials">Testimonials</a></li>
           <li><a href="#pricing">Pricing</a></li>
           <li><a href="#contact">Contact</a></li>
@@ -284,7 +286,7 @@
 <div class="hero-content">
   <h1>Advanced AI Code Generation</h1>
   <p>Generate complex code, including Minecraft plugins, with state-of-the-art AI technology that rivals Claude and ChatGPT</p>
-  <a href="#demo" class="btn">Try it Now</a>
+  <a href="#demo" class="btn" id="tryItNowBtn">Try it Now</a>
 </div>
 </section>
 
@@ -348,6 +350,14 @@
 </section>
 
 <script>
+    // Show chat section when "Try it Now" is clicked
+    document.getElementById('tryItNowBtn').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent default anchor behavior
+        document.querySelector('.chat-container').style.display = 'block'; // Show chat
+        document.querySelector('.hero').style.display = 'none'; // Hide hero section
+        document.querySelector('.features').style.display = 'none'; // Hide features section
+    });
+
     // JavaScript for chat functionality
     const chatBox = document.getElementById('chatBox');
     const chatInput = document.getElementById('chatInput');
@@ -360,6 +370,8 @@
             if (message) {
                 addMessage('You: ' + message);
                 chatInput.value = '';
+                // Simulate AI response
+                simulateAIResponse(message);
             }
         }
     });
@@ -370,6 +382,21 @@
         messageElement.textContent = message;
         chatBox.appendChild(messageElement);
         chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+    }
+
+    // Simulate AI response (replace this with actual API call)
+    function simulateAIResponse(userMessage) {
+        // Here you would typically call your AI API to get a response
+        // For demonstration, we will just echo the message
+        const aiResponse = "AI: Here is a code snippet for your request: \n" + 
+                           "```java\n" +
+                           "public class Example {\n" +
+                           "    public static void main(String[] args) {\n" +
+                           "        System.out.println(\"Hello, Minecraft!\");\n" +
+                           "    }\n" +
+                           "}\n" +
+                           "```";
+        addMessage(aiResponse);
     }
 
     // Function to handle file upload
