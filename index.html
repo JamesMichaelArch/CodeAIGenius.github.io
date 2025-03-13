@@ -3,28 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Code Generator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
-    <div class="container mx-auto text-center p-6">
-        <h1 class="text-4xl font-bold mb-4">AI Code Generator</h1>
-        <textarea id="codeInput" class="w-full p-3 text-black rounded-lg" placeholder="Enter your request..."></textarea>
-        <button id="generateBtn" class="mt-4 px-6 py-2 bg-blue-500 hover:bg-blue-700 rounded-lg">Generate Code</button>
-        <pre id="output" class="mt-4 p-4 bg-gray-800 rounded-lg"></pre>
-    </div>
+    <title>CodeGenius AI - Advanced Code Generation</title>
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --primary-dark: #5a0cb0;
+            --secondary: #2575fc;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --success: #28a745;
+            --info: #17a2b8;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
 
-    <script>
-        document.getElementById("generateBtn").addEventListener("click", async () => {
-            const input = document.getElementById("codeInput").value;
-            const response = await fetch("http://127.0.0.1:5000/generate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: input })
-            });
-            const data = await response.json();
-            document.getElementById("output").textContent = data.result;
-        });
-    </script>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo span {
+            margin-left: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 20px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--warning);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: url('/api/placeholder/1200/600') center/cover;
+            color: white;
+            text-align: center;
+            padding: 80px 20px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--secondary);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        /* Chat Section */
+        .chat-container {
+            max-width: 600px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: white;
+        }
+
+        .chat-input {
+            width: calc(100% - 100px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .upload-btn {
+            padding: 10px;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-buttons {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+            }
+
+            .nav-links {
+                margin-top: 15px;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .code-content {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .code-input, .code-output {
+                width: 100%;
+                height: 200px;
+            }
+
+            .code-output {
+                border-left: none;
+                border-top: 1px solid #333;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Header Section -->
+<header>
+<div class="container">
+  <nav class="navbar">
+      <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+              <path d="M6 8h.01M18 8h.01"></path>
+              <path d="M12 8a2 2 0 1 0 2 2"></path>
+          </svg>
+          <span>CodeGenius AI</span>
+      </div>
+      <ul class="nav-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#demo">Try It</a></li>
+          <li><a href="#testimonials">Testimonials</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#contact">Contact</a></li>
+      </ul>
+  </nav>
+</div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+<div class="hero-content">
+  <h1>Advanced AI Code Generation</h1>
+  <p>Generate complex code, including Minecraft plugins, with state-of-the-art AI technology that rivals Claude and ChatGPT</p>
+  <a href="#demo" class="btn">Try it Now</a>
+</div>
+</section>
+
+<!-- Features Section -->
+<section class="features" id="features">
+<div class="container">
+  <div class="section-title">
+      <h2>Powerful Features</h2>
+      <p>Transform your development workflow with our advanced AI code generation</p>
+  </div>
+  <div class="feature-grid">
+      <div class="feature-card">
+          <div class="feature-icon">🚀</div>
+          <h3>Long Code Generation</h3>
+          <p>Generate extensive code snippets and complete applications with comprehensive functionality in one go.</p>
+      </div>
+      <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Lightning Fast</h3>
+          <p>Our optimized AI models deliver results in seconds, even for complex programming challenges.</p>
+      </div>
+      <div class="feature-card">
+          <div class="feature-icon">🎮</div>
+          <h3>Minecraft Plugin Expert</h3>
+          <p>Specialized in generating Spigot/Paper 1.8.8 plugins with proper event handling and Bukkit API integration.</p>
+      </div>
+      <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3>Code Understanding</h3>
+          <p>Analyze and comprehend existing codebases to provide context-aware suggestions and improvements.</p>
+      </div>
+      <div class="feature-card">
+          <div class="feature-icon">🛠️</div>
+          <h3>Multi-Language Support</h3>
+          <p>Generate code in Java, JavaScript, Python, C++, PHP and many more programming languages.</p>
+      </div>
+      <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>API Integration</h3>
+          <p>Easily integrate with your favorite development tools via our comprehensive API.</p>
+      </div>
+  </div>
+</div>
+</section>
+
+<!-- Chat Section -->
+<section class="chat" id="chat">
+    <div class="container chat-container">
+        <h2>Chat with James Michael</h2>
+        <div class="chat-box" id="chatBox">
+            <!-- Chat messages will appear here -->
+        </div>
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
+        <button class="upload-btn" id="uploadBtn">Upload File</button>
+        <input type="file" id="fileInput" style="display: none;" accept=".txt, .jpg, .png">
+    </div>
+    <div class="login-buttons">
+        <button onclick="loginWithFacebook()">Login with Facebook</button>
+        <button onclick="loginWithGmail()">Login with Gmail</button>
+    </div>
+</section>
+
+<script>
+    // JavaScript for chat functionality
+    const chatBox = document.getElementById('chatBox');
+    const chatInput = document.getElementById('chatInput');
+    const fileInput = document.getElementById('fileInput');
+
+    // Function to handle sending messages
+    chatInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const message = chatInput.value;
+            if (message) {
+                addMessage('You: ' + message);
+                chatInput.value = '';
+            }
+        }
+    });
+
+    // Function to add messages to chat
+    function addMessage(message) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+    }
+
+    // Function to handle file upload
+    document.getElementById('uploadBtn').addEventListener('click', function () {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function () {
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                addMessage('Uploaded file content: ' + e.target.result);
+            };
+            reader.readAsText(file); // Read as text for .txt files
+        }
+    });
+
+    // Placeholder functions for login
+    function loginWithFacebook() {
+        alert('Login with Facebook functionality not implemented.');
+    }
+
+    function loginWithGmail() {
+        alert('Login with Gmail functionality not implemented.');
+    }
+</script>
+
+<!-- Testimonials Section -->
+<section class="testimonials" id="testimonials">
+    <div class="container">
+        <div class="section-title">
+            <h2>What Developers Say</h2>
+            <p>Join hundreds of satisfied developers using our AI code generation</p>
+        </div>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-text">
+                    "This AI saved me hours of development time on my Minecraft server. The plugins it generated worked flawlessly with minimal adjustments."
+                </div>
+                <div class="testimonial-author">
+                    <img src="/api/placeholder/50/50" alt="Alex" class="author-img">
+                    <div class="author-info">
+                        <h4>Alex Johnson</h4>
+                        <p>Game Server Developer</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-text">
+                    "I was skeptical at first, but the code quality is exceptional. It understands complex requirements and produces clean, well-documented code."
+                </div>
+                <div class="testimonial-author">
+                    <img src="/api/placeholder/50/50" alt="Sarah" class="author-img">
+                    <div class="author-info">
+                        <h4>Sarah Chen</h4>
+                        <p>Senior Software Engineer</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-text">
+                    "The ability to generate long, complex code snippets has transformed my workflow. It's like having an expert programmer always available to help."
+                </div>
+                <div class="testimonial-author">
+                    <img src="/api/placeholder/50/50" alt="Michael" class="author-img">
+                    <div class="author-info">
+                        <h4>Michael Rodriguez</h4>
+                        <p>Freelance Developer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="container">
+        <h2>Ready to Boost Your Development?</h2>
+        <p>Join the revolution in code generation and streamline your workflow with CodeGenius AI. Start generating code today!</p>
+        <a href="#demo" class="btn">Get Started</a>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="pricing" id="pricing">
+    <div class="container">
+        <div class="section-title">
+            <h2>Pricing Plans</h2>
+            <p>Choose a plan that fits your needs</p>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>Basic Plan</h3>
+                <p>Perfect for individual developers.</p>
+                <p><strong>$19/month</strong></p>
+                <ul>
+                    <li>Access to basic features</li>
+                    <li>Community support</li>
+                    <li>Generate up to 100 code snippets/month</li>
+                </ul>
+                <a href="#" class="btn">Choose Plan</a>
+            </div>
+            <div class="feature-card">
+                <h3>Pro Plan</h3>
+                <p>Ideal for small teams.</p>
+                <p><strong>$49/month</strong></p>
+                <ul>
+                    <li>All Basic features</li>
+                    <li>Priority support</li>
+                    <li>Generate up to 500 code snippets/month</li>
+                </ul>
+                <a href="#" class="btn">Choose Plan</a>
+            </div>
+            <div class="feature-card">
+                <h3>Enterprise Plan</h3>
+                <p>For large organizations.</p>
+                <p><strong>Contact Us</strong></p>
+                <ul>
+                    <li>All Pro features</li>
+                    <li>Dedicated account manager</li>
+                    <li>Unlimited code generation</li>
+                </ul>
+                <a href="#" class="btn">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact" id="contact">
+    <div class="container">
+        <div class="section-title">
+            <h2>Contact Us</h2>
+            <p>Have questions? We're here to help!</p>
+        </div>
+        <form action="#" method="POST">
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
+            </div>
+            <button type="submit" class="generate-btn">Send Message</button>
+        </form>
+    </div>
+</section>
+
+<!-- Footer Section -->
+<footer>
+    <div class="container footer-content">
+        <div class="footer-section">
+            <h3>About Us</h3>
+            <p>CodeGenius AI is dedicated to providing developers with the tools they need to succeed in their projects.</p>
+        </div>
+        <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul class="footer-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Follow Us</h3>
+            <div class="social-icons">
+                <a href="#" class="social-icon">F</a>
+                <a href="#" class="social-icon">T</a>
+                <a href="#" class="social-icon">I</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2023 CodeGenius AI. All rights reserved.</p>
+    </div>
+</footer>
 </body>
 </html>
